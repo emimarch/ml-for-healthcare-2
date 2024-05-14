@@ -1,0 +1,2 @@
+#! /bin/bash
+accelerate launch codes/train_causal_lm.py --per_device_train_batch_size 128 --block_size 4096 --seed 42 --pretrained_model_name_or_path seeklhy/codes-1b --epochs 4 --lr 5e-6 --warmup_ratio 0.05 --checkpointing_steps 100000 --tensorboard_log_dir ./train_logs/codes-1b-model-1 --mode sft --output_ckpt_dir ./ckpts/codes-1b-model-1 --text2sql_data_dir ./data/train_reformatted.json --table_num 6 --column_num 10

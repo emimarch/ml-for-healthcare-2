@@ -1,0 +1,777 @@
+{
+  "schema": {
+    "schema_items": [
+      {
+        "table_name": "PATIENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "GENDER",
+          "DOB",
+          "DOD"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "text",
+          "timestamp",
+          "timestamp"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "ADMISSIONS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "ADMITTIME",
+          "DISCHTIME",
+          "ADMISSION_TYPE",
+          "ADMISSION_LOCATION",
+          "DISCHARGE_LOCATION",
+          "INSURANCE",
+          "LANGUAGE",
+          "MARITAL_STATUS",
+          "AGE"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "timestamp",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "integer"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "D_ICD_DIAGNOSES",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "ICD_CODE",
+          "LONG_TITLE"
+        ],
+        "column_types": [
+          "integer",
+          "text",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "D_ICD_PROCEDURES",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "ICD_CODE",
+          "LONG_TITLE"
+        ],
+        "column_types": [
+          "integer",
+          "text",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "D_LABITEMS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "ITEMID",
+          "LABEL"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "D_ITEMS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "ITEMID",
+          "LABEL",
+          "ABBREVIATION",
+          "LINKSTO"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "text",
+          "text",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "DIAGNOSES_ICD",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "ICD_CODE",
+          "CHARTTIME"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "text",
+          "timestamp"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "PROCEDURES_ICD",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "ICD_CODE",
+          "CHARTTIME"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "text",
+          "timestamp"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "LABEVENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "ITEMID",
+          "CHARTTIME",
+          "VALUENUM",
+          "VALUEUOM"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "real",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "PRESCRIPTIONS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STARTTIME",
+          "STOPTIME",
+          "DRUG",
+          "DOSE_VAL_RX",
+          "DOSE_UNIT_RX",
+          "ROUTE"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "timestamp",
+          "text",
+          "text",
+          "text",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "COST",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "EVENT_TYPE",
+          "EVENT_ID",
+          "CHARGETIME",
+          "COST"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "text",
+          "integer",
+          "timestamp",
+          "real"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "CHARTEVENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STAY_ID",
+          "ITEMID",
+          "CHARTTIME",
+          "VALUENUM",
+          "VALUEUOM"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "real",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "INPUTEVENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STAY_ID",
+          "STARTTIME",
+          "ITEMID",
+          "AMOUNT"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "integer",
+          "real"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "OUTPUTEVENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STAY_ID",
+          "CHARTTIME",
+          "ITEMID",
+          "VALUE"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "integer",
+          "real"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "MICROBIOLOGYEVENTS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "CHARTTIME",
+          "SPEC_TYPE_DESC",
+          "TEST_NAME",
+          "ORG_NAME"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "text",
+          "text",
+          "text"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "ICUSTAYS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STAY_ID",
+          "FIRST_CAREUNIT",
+          "LAST_CAREUNIT",
+          "INTIME",
+          "OUTTIME"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "text",
+          "text",
+          "timestamp",
+          "timestamp"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "TRANSFERS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "TRANSFER_ID",
+          "EVENTTYPE",
+          "CAREUNIT",
+          "INTIME",
+          "OUTTIME"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "text",
+          "text",
+          "timestamp",
+          "timestamp"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "TB_CXR_PLUS",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STUDY_ID",
+          "IMAGE_ID",
+          "STUDYDATETIME",
+          "VIEWPOSITION",
+          "STUDYORDER",
+          "OBJECT",
+          "ATTRIBUTE",
+          "CATEGORY",
+          "RELATION",
+          "CT_RATIO",
+          "MT_RATIO"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "text",
+          "integer",
+          "text",
+          "text",
+          "text",
+          "integer",
+          "real",
+          "real"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "table_name": "TB_CXR",
+        "table_comment": "",
+        "column_names": [
+          "ROW_ID",
+          "SUBJECT_ID",
+          "HADM_ID",
+          "STUDY_ID",
+          "IMAGE_ID",
+          "STUDYDATETIME",
+          "VIEWPOSITION",
+          "STUDYORDER"
+        ],
+        "column_types": [
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "integer",
+          "timestamp",
+          "text",
+          "integer"
+        ],
+        "column_comments": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "column_contents": [],
+        "pk_indicators": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}
