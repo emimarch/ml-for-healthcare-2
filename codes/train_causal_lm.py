@@ -145,7 +145,7 @@ def train(opt):
             sanity_check(dataset[0]["input_ids"], dataset[0]["labels"], tokenizer)
     elif opt.mode == "sft":
         dataset = SFTSQLGenerationDataset(opt.text2sql_data_dir, tokenizer, opt.block_size, "train", opt.table_num, opt.column_num, None)
-        #dataset =  json.load(open(opt.text2sql_data_dir))
+  
     else:
         raise ValueError("opt.mode should be in [pt, sft].")
     dataloader = DataLoader(dataset, batch_size = opt.per_device_train_batch_size, shuffle = True, drop_last = True)
