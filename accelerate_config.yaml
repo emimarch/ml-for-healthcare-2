@@ -1,0 +1,27 @@
+compute_environment: LOCAL_MACHINE
+machine_type: GPU
+num_processes: 1
+num_machines: 1
+mixed_precision: bf16
+use_deepspeed: true
+deepspeed_config:
+  zero_optimization_stage: 2
+  offload_optimizer_device: none
+  offload_param_device: none
+  gradient_accumulation_steps: 4
+  gradient_clipping: 1.0
+tpu_name: null
+use_cpu: false
+use_mps: false
+optimize_with_dynamo: false
+deepspeed:
+  enabled: true
+  zero_optimization:
+    stage: 2
+    offload_optimizer:
+      device: none
+    offload_param:
+      device: none
+  gradient_accumulation_steps: 4
+  gradient_clipping: 1.0
+  zero_allow_untested_optimizer: false
