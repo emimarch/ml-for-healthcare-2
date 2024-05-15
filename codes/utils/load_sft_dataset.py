@@ -8,7 +8,8 @@ from schema_item_filter import SchemaItemClassifierInference, filter_schema
 from utils.db_utils import get_db_schema_sequence, get_matched_content_sequence
 
 def prepare_text2sql_prefix_sequence(data):
-    prefix_seq = data["schema_sequence"] + "\n" + data["content_sequence"] + "\n" + data["text"] + "\n"
+    #prefix_seq = data["schema_sequence"] + "\n" + data["content_sequence"] + "\n" + data["text"] + "\n"
+    prefix_seq = data["schema_sequence"] + "\n" + data["text"] + "\n"
     
     return prefix_seq
 
