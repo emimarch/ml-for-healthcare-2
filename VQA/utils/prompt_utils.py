@@ -100,6 +100,3 @@ def build_prompt_from_nlq_zs(question, prompt_file, class_values):
     prompt_vqa = prompt_vqa + disclaimer
 
     return prompt_vqa
-
-prompt = build_prompt_from_nlq_zs("name all anatomical locations that manifest aspiration, but not costophrenic angle blunting, given the first study of patient 12754610 on 09/this year.", "/home/filippo/PycharmProjects/ml-for-healthcare-2/VQA/prompts/prompt.json", "/home/filippo/PycharmProjects/ml-for-healthcare-2/VQA/prompts/class_values.json")
-print(prompt)
