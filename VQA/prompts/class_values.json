@@ -108,7 +108,7 @@
     "trachea",
     "upper mediastinum"
 ],
-  "category": ["anatomicalfinding", "device", "disease", "technicalassessment", "tubesandlines"],
+  "category": ["anatomicalfinding", "device", "disease", "technicalassessment", "tubes/lines"],
   "view": ["AP","PA"],
   "gender": ["male","female"]
 }
