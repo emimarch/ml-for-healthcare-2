@@ -56,9 +56,6 @@ def build_prompt_from_nlq_zs(question, prompt_file, class_values):
                     values_from_q[key] = []
                     values_from_q[key].append(v)
     admissible_output_values = []
-    print(question_tmp)
-    print(template_from_q)
-    print(values_from_q)
     """ Now get the template with the highest cosine similarity with the one extracted from the question"""
     prompt_values = json.load(open(prompt_file))
     prompt_val_idx = ""
@@ -79,13 +76,11 @@ def build_prompt_from_nlq_zs(question, prompt_file, class_values):
             if (k in template_from_q.lower() and k in value["template"].lower()):
                 sim = sim + 10
             elif(k not in template_from_q.lower() and k in value["template"].lower()):
-                print(k)
                 sim = sim - 10
         if(sim>most_similar_template_cos_sim):
             most_similar_template_cos_sim = sim
             prompt_val_idx = key
-            print(key)
-    print(prompt_val_idx, " ",prompt_values[prompt_val_idx]["value_type"])
+
     """ Now let's define the admissible values which we are going to pass to the model through the prompt """
     if(prompt_values[prompt_val_idx]["value_type"] == "boolean"):
         admissible_output_values = ["true","false"]
