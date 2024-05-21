@@ -65,7 +65,7 @@
 "9":{
 "template": "Which ${category} is related to the ${object}, ${attribute_1} or ${attribute_2}?",
 "content_type": "attribute",
-"value_type": "attribute",
+"value_type": "attribute_from_q",
 "few_shot_examples": [
 ]
 },
