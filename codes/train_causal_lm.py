@@ -4,8 +4,10 @@ import math
 import time
 import random 
 import numpy as np
+import sys
 
 import torch
+from torch.cuda.amp import autocast, GradScaler
 #torch.cuda.empty_cache()
 #os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
 
@@ -18,10 +20,18 @@ from torch.utils.data import DataLoader
 from torch.optim import AdamW
 
 from utils.lr_scheduler import LinearWarmupCosineAnnealingLR
-
+from datetime import datetime
 '''
 Training LLM using Huggingface Accelerate + Deepspeed.
 '''
+
+# Open a file for logging
+#log_file = open("program_output.log", "a")
+
+# Redirect stdout and stderr to the log file
+#sys.stdout = log_file
+#sys.stderr = log_file
+
 
 def parse_option():
     parser = argparse.ArgumentParser()
@@ -122,15 +132,22 @@ def sanity_check(input, target, tokenizer):
 
 def train(opt):
     print('Hello!')
+    custom_home = '/scratch/work/marchee3/ML_for_healthcare/huggingface'
+    device = torch.device('cuda:0')
+    print('Current device: {}'.format(torch.cuda.current_device()))
     set_seed(opt.seed)
-
+    print('Here')
 
     total_batch_size = opt.per_device_train_batch_size
 
 
-    tokenizer = AutoTokenizer.from_pretrained(opt.pretrained_model_name_or_path)
+    tokenizer = AutoTokenizer.from_pretrained(opt.pretrained_model_name_or_path, cache_dir = custom_home)
     print('Qui1')
-    model = AutoModelForCausalLM.from_pretrained(opt.pretrained_model_name_or_path)
+    torch.cuda.empty_cache()
+    print('Qui1.25')
+    model = AutoModelForCausalLM.from_pretrained(opt.pretrained_model_name_or_path, cache_dir = custom_home)
+    print('Qui1.5')
+    model.to(device)
     print('Qui2')
     tokenizer.pad_token_id = tokenizer.eos_token_id
     print('Qui3')
@@ -171,25 +188,59 @@ def train(opt):
     accumulation_loss = 0
     global_completed_steps = 0
     model.train()
-
+    print('QuiIDK')
     st = time.time()
-    for epoch in range(opt.epochs):
+    st_sr = time.strftime("%H:%M:%S")
+    print('Start time:{}'.format(st_sr))
 
+    # Start scaler
+    scaler = GradScaler()
+
+    for epoch in range(opt.epochs):
+        print('----------------------------------------')
         print("Start training epoch:", epoch+1)
+        print('----------------------------------------')
         for batch_idx, batch in enumerate(dataloader):
-        
-            outputs = model(**batch)
-            loss = outputs.loss
-            accumulation_loss += loss.detach().float()
-            loss.backward()
-            optimizer.step()
+            bts = time.time()
+            print('Batch: {}'.format(batch_idx))
+            # Move to device
+            batch = {k: v.to(device) for k, v in batch.items()}
+            print('Moved batch to device')
+
+            # Added for mixed precision
+            with autocast(dtype=torch.float16):
+                outputs = model(**batch)
+                loss = outputs.loss
+            
+            
+            print('Before loss backward')
+            #loss.backward()
+            #optimizer.step()
+
+            # ADDED BECAUSE OF MIXED PRECISION
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
+
             lr_scheduler.step()
             optimizer.zero_grad()
+
+            accumulation_loss += loss.detach().float()
+            bte = time.time()
+            if batch_idx % 250 == 0:
+                print('Accumulated loss: {}'.format(accumulation_loss))
+                print('Batch loss: {}'.format(loss.detach().float()))
+                print('End batch at time: {}'.format(time.strftime("%H:%M:%S")))
+                print('Time taken to process time: {}'.format(bte-bts))
+                print('Time since training start: {}'.format(bte-st))
+                print('################################################')
 
         print("in the end of an epoch, save a checkpoint")
         checkpoint_model_new(model, tokenizer, opt.output_ckpt_dir, global_completed_steps)
         if opt.save_all_states:
             checkpoint_model_optimizer_scheduler(opt.output_ckpt_dir, model, global_completed_steps, lr_scheduler)
+
 
 if __name__ == "__main__":
     opt = parse_option()
