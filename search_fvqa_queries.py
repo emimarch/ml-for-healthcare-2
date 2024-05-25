@@ -8,11 +8,17 @@
 import numpy as np
 import json 
 import os
+import argparse
 from search_database import get_only_table_samples
 import re
 import pandas as pd
 import shutil
 
+def parse_option():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dset', type = str, default='valid')    
+    opt = parser.parse_args()
+    return opt
 
 
 
@@ -78,7 +84,8 @@ def copy_files(source_dir, target_dir, file_names, study_ids):
 
 
 def main(): 
-    dset = 'valid'
+    opt = parse_option()
+    dset = opt.dset
     set_path = 'data/{}_reformatted.json'.format(dset)
     query_path = 'data/{}_generated_queries.json'.format(dset)
     vqa_queries_filepath = 'data/vqa/{}/'.format(dset)
