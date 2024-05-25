@@ -60,23 +60,10 @@ class SFTSQLGenerationDataset(Dataset):
     def __init__(self, text2sql_data_dir, tokenizer, max_tokens, mode, table_num, column_num, sic_path):
         super().__init__()
         dataset = json.load(open(text2sql_data_dir))
-
-        print("apply filtering strategies...")
-        if mode == "train":
              
-            #dataset = filter_schema(dataset, "train", None, table_num, column_num)
-            dataset = dataset
-        elif mode == "eval":
-            sic = SchemaItemClassifierInference(sic_path)
-            #dataset = filter_schema(dataset, "eval", sic, table_num, column_num)
-            dataset = dataset
-            del sic
-            torch.cuda.empty_cache()
-
-        # prepare schema sequence and content sequence
         for data in dataset:
             data["schema_sequence"] = get_db_schema_sequence(data["schema"])
-            #data["content_sequence"] = get_matched_content_sequence(data["matched_contents"])
+
 
         self.mode = mode
         self.dataset = dataset
