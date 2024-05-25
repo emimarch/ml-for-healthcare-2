@@ -3,12 +3,23 @@ import sqlite3
 
 from func_timeout import func_set_timeout, FunctionTimedOut
 
+
+
+
+def func_vqa(s, sid):
+    return None
 # get the database cursor for a sqlite database path
 def get_cursor_from_path(sqlite_path):
     try:
         if not os.path.exists(sqlite_path):
             print("Openning a new connection %s" % sqlite_path)
         connection = sqlite3.connect(sqlite_path, check_same_thread = False)
+
+        # ADD FUNC VQA DUMMY
+
+        connection.create_function("func_vqa", 2, func_vqa)
+
+        
     except Exception as e:
         print(sqlite_path)
         raise e
