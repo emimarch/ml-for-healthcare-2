@@ -8,7 +8,7 @@
   pip install -r codes/requirements.txt
 
 ## TRAINING
-```
+```sh
 python reformat_dataset.py --dset train
 training_script.sh
 ```
@@ -20,20 +20,20 @@ testing_script.sh (modify dataset in testing_script accordingly, --dset argument
 ## QUERY DATABASE 
 
 1) First, indentify VQA queries and save them, in addition to the necessary x-ray images
-```
+```sh
 python search_fvqa_queries.py --dset valid
 ```
 OR 
-```
+```sh
 python search_fvqa_queries.py --dset test
 ```
 
 2) Then, query the database 
-```
+```sh
 python search_database.py --dset valid
 ```
 OR 
-```
+```sh
 python search_database.py --dset test
 ```
 
