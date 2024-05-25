@@ -1,0 +1,14 @@
+# Ignore all .log, .jpg, .err, .txt, .json, .csv, .jpg files
+*.log
+*.jpg
+*.csv
+*.txt
+*.json
+*.err
+*.sql
+*.db
+*.zip
+*.pyc
+
+train_logs/
+huggingface/
