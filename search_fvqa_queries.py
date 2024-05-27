@@ -116,7 +116,7 @@ def main():
 
     # Select images from image folder and save them in a separate folder
 
-    copy_files('data/images/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
+    copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
 
 
 
