@@ -63,8 +63,11 @@ def get_labels(question, prompt_file='VQA/prompts/templates.json', class_values_
     most_similar_template_cos_sim = -1
 
     # Load pre-trained BERT model and tokenizer
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     model = BertModel.from_pretrained('bert-base-uncased')
+    model = model.to(device)
+    tokenizer = tokenizer.to(device)
     # Define some keyword that should influence the cosine similarity and make the results more correct
     keywords_for_sim = ['abnormal','either','both','common','anatomical','which','list',"attribute","category","object","gender"]
     for key, value in prompt_values.items():
@@ -107,9 +110,4 @@ def get_answer(model, image, texts, labels):
         sorted_indices = sorted_indices.cpu().numpy()
 
     top_label = labels[sorted_indices[0][0]]
-
-    for j in range(len(labels)):
-        jth_index = sorted_indices[0][j]
-        print(f'{labels[jth_index]}: {logits[0][jth_index]}')
-    print('\n')
     return top_label
