@@ -106,7 +106,6 @@ def get_answer(model, image, texts, labels):
         logits = (logit_scale * image_features @ text_features.t()).detach().softmax(dim=-1)
         sorted_indices = torch.argsort(logits, dim=-1, descending=True)
 
-        logits = logits.cpu().numpy()
         sorted_indices = sorted_indices.cpu().numpy()
 
     top_label = labels[sorted_indices[0][0]]
