@@ -1,5 +1,10 @@
 # Give the LLM generated sql queries, this function runs the queries and saves the database results into the submission folder
 # WIP
+from open_clip import create_model_from_pretrained, get_tokenizer # works on open-clip-torch>=2.23.0, timm>=0.9.8
+from VQA.utils.vqa_utils import get_labels, get_answer
+import torch
+from urllib.request import urlopen
+from PIL import Image
 
 
 import argparse
@@ -13,7 +18,8 @@ import sqlite3
 from PIL import Image
 
 
-
+model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
 
 def parse_option():
     parser = argparse.ArgumentParser()
@@ -111,23 +117,35 @@ def get_only_table_samples(val_dataset_path):
     return only_table_val
 
 def find_image_from_folder(study_id):
-    folder_path = 'data/vqa_images/{}/'.format(DSET) + study_id
+    folder_path = 'data/vqa_images/{}/'.format(DSET) + study_id + '.jpg'
     image = Image.open(folder_path)
     return image
     
 
 
-def func_vqa(sub_query, study_id): 
+def func_vqa(sub_query, study_id):
 
     # Find image from folders
-
-    model_name = 'path/to/model'
     image = find_image_from_folder(study_id)
 
-    #outputs = eval_model(model_name, image, sub_query) # load model 
-    pass
+    labels = get_labels(sub_query)
 
-    #return outputs
+    prompt_template = sub_query + 'Answer: '
+    # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
+    # The model will assign the highest score to the combination that matches the image the best.
+    texts = [prompt_template + l for l in labels]
+
+    context_length = 256
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    device = torch.device('cpu')
+    model.to(device)
+    model.eval()
+
+    image = torch.stack([preprocess(image)]).to(device)
+    texts = tokenizer(texts, context_length=context_length).to(device)
+
+    answer = get_answer(model, image, texts, labels)
+    return answer
 
 
 def execute_query(database_path, query):
@@ -144,7 +162,7 @@ def execute_query(database_path, query):
     # Connect to the SQLite database
     connection = sqlite3.connect(database_path)
 
-    # ADD FUNC VQA DUMMY
+    # ADD FUNC VQA
 
     connection.create_function("func_vqa", 2, func_vqa)
     cursor = connection.cursor()
