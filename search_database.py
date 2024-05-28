@@ -20,8 +20,10 @@ from PIL import Image
 import random
 from collections import Counter
 
-model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
-tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+
+custom_home = '/c/Users/aemil/Downloads/ML_for_healthcare/huggingface'
+model, preprocess = create_model_from_pretrained('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
+tokenizer = get_tokenizer('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
 
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 similarity_model = BertModel.from_pretrained('bert-base-uncased')
@@ -286,20 +288,20 @@ def main():
     for observation_id, generated_sql in observation_sql_dict.items():
         # Check if ID is in table only
         generated_sql = post_process_sql(generated_sql)
-        if int(observation_id) in only_table_ids: 
-            print('Observation ID: {}'.format(observation_id))
-            try: 
-                answer = post_process_answer(execute_query('data/database/mimic_iv_cxr/silver/mimic_iv_cxr.db', generated_sql))
-            except: 
-                answer = None
-        
-        else: 
+        #if int(observation_id) in only_table_ids: 
+        print('Observation ID: {}'.format(observation_id))
+        try: 
+            answer = post_process_answer(execute_query('data/database/mimic_iv_cxr/silver/mimic_iv_cxr.db', generated_sql))
+        except: 
             answer = None
+        
+        #else: 
+            #answer = None
 
         submission.append({"id": observation_id, "answer": answer})
 
 
-    result_dir = 'data/submissions/'
+    result_dir = 'data/submissions/{}/'.format(dset)
     os.makedirs(result_dir, exist_ok=True)
     with open(os.path.join(result_dir, "{}_prediction.json".format(dset)), "w") as f:
         json.dump(submission, f)
