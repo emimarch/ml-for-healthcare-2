@@ -17,7 +17,8 @@ import re
 from tqdm import tqdm
 import sqlite3
 from PIL import Image
-
+import random
+from collections import Counter
 
 model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
 tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
@@ -121,22 +122,23 @@ def get_only_table_samples(val_dataset_path):
     return only_table_val
 
 def find_image_from_folder(study_id):
-    folder_path = 'data/vqa_images/{}/'.format(DSET) + study_id + '.jpg'
-    image = Image.open(folder_path)
-    return image
+    directory_path = 'data/vqa_images/{}/{}/'.format(DSET, study_id)
+    images = []
+    # Iterate through all objects in the directory
+    for item in os.listdir(directory_path):
+        item_path = os.path.join(directory_path, item)
+        
+        try:
+            image = Image.open(item_path)
+            images.append(image)
+        except: 
+            continue
+
+    return images
     
 
 
-def func_vqa(sub_query, study_id):
-    # Find image from folders
-    image = find_image_from_folder(study_id)
-
-    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
-
-    prompt_template = sub_query + 'Answer: '
-    # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
-    # The model will assign the highest score to the combination that matches the image the best.
-    texts = [prompt_template + l for l in labels]
+def vqa(image, texts, labels):
 
     context_length = 256
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -148,7 +150,76 @@ def func_vqa(sub_query, study_id):
 
     answer = get_answer(model, image, texts, labels)
     answer = int(answer) if answer in ["0", "1"] else answer
+
     return answer
+
+
+
+def find_template_option(labels):
+    if labels == [0,1]: 
+        return 2
+    if len(labels) == 2: 
+        if labels != ["male", "female"] and labels != ["AP","PA"]:
+            return 3
+        else: 
+            return 1
+    return None
+
+
+def func_vqa(sub_query, study_id):
+    # Find image from folders
+    images = find_image_from_folder(study_id) # list
+
+    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
+
+    prompt_template = sub_query + 'Answer: '
+    # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
+    # The model will assign the highest score to the combination that matches the image the best.
+    texts = [prompt_template + l for l in labels]
+    if len(images) == 1: 
+        answer = vqa(images[0], texts, labels)
+    elif len(images) > 1: 
+        # Opzioni: 
+        # 1) Quali condizioni ci sono in questo studio => concatena output di ognuna =>  se label len(>= 2), and if two solo gender or solo view
+        # 2) Questo studio ha questa condizione? => True is at least one True = > se label True or False
+        # 3) Quele tra queste due condizione, pneumonia o tumore, c'é nello studio? => se len > 3 majority vote se len == 2 random, => se label len >= 2 oe non gener of view
+        option = find_template_option(labels)
+        if option == None: 
+            print('No template found')
+            return ''
+        if option == 1: # concatena e set, return list
+            answer = []
+            for image in images: 
+                img_answer = vqa(image, texts, labels)
+                answer.extend(img_answer)
+            answer = list(set(answer))
+            return answer
+        elif option == 2: # True se almeno una True, return one
+            answer = False
+            for image in images: 
+                img_answer = int(vqa(image, texts, labels))
+                answer = img_answer or answer
+            return answer
+        elif option == 3: # return one
+            answer = []
+            for image in images: 
+                img_answer = vqa(image, texts, labels)
+                answer.extend(img_answer)
+            if len(answer) == 2: 
+                rind = random.randint(0, 1)
+                answer = answer[rind]
+            else: # majority vote
+                counter = Counter(answer)
+
+                # Find the item with the most counts
+                most_common_item, _ = counter.most_common(1)[0]
+
+                answer = most_common_item
+
+            return answer
+
+    else: 
+        return ''
 
 
 def execute_query(database_path, query):
