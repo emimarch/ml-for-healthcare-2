@@ -1,7 +1,7 @@
 # Give the LLM generated sql queries, this function runs the queries and saves the database results into the submission folder
 # WIP
 from open_clip import create_model_from_pretrained, get_tokenizer # works on open-clip-torch>=2.23.0, timm>=0.9.8
-from VQA.utils.vqa_utils import get_labels, get_answer
+from VQA.utils.vqa_utils import get_labels, call_vqa_model
 import torch
 from urllib.request import urlopen
 from PIL import Image
@@ -148,7 +148,7 @@ def vqa(image, texts, labels):
     image = torch.stack([preprocess(image)]).to(device)
     texts = tokenizer(texts, context_length=context_length).to(device)
 
-    answer = get_answer(model, image, texts, labels)
+    answer = call_vqa_model(model, image, texts, labels)
     answer = int(answer) if answer in ["0", "1"] else answer
 
     return answer
@@ -165,50 +165,40 @@ def find_template_option(labels):
             return 1
     return None
 
-
-def func_vqa(sub_query, study_id):
-    # Find image from folders
-    images = find_image_from_folder(study_id) # list
-
-    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
-
-    prompt_template = sub_query + 'Answer: '
-    # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
-    # The model will assign the highest score to the combination that matches the image the best.
-    texts = [prompt_template + l for l in labels]
-    if len(images) == 1: 
+def get_answer(images,texts, labels):
+    if len(images) == 1:
         answer = vqa(images[0], texts, labels)
-    elif len(images) > 1: 
-        # Opzioni: 
+    elif len(images) > 1:
+        # Opzioni:
         # 1) Quali condizioni ci sono in questo studio => concatena output di ognuna =>  se label len(>= 2), and if two solo gender or solo view
         # 2) Questo studio ha questa condizione? => True is at least one True = > se label True or False
         # 3) Quele tra queste due condizione, pneumonia o tumore, c'é nello studio? => se len > 3 majority vote se len == 2 random, => se label len >= 2 oe non gener of view
         option = find_template_option(labels)
-        if option == None: 
+        if option == None:
             print('No template found')
             return ''
-        if option == 1: # concatena e set, return list
+        if option == 1:  # concatena e set, return list
             answer = []
-            for image in images: 
+            for image in images:
                 img_answer = vqa(image, texts, labels)
                 answer.extend(img_answer)
             answer = list(set(answer))
             return answer
-        elif option == 2: # True se almeno una True, return one
+        elif option == 2:  # True se almeno una True, return one
             answer = False
-            for image in images: 
+            for image in images:
                 img_answer = int(vqa(image, texts, labels))
                 answer = img_answer or answer
             return answer
-        elif option == 3: # return one
+        elif option == 3:  # return one
             answer = []
-            for image in images: 
+            for image in images:
                 img_answer = vqa(image, texts, labels)
                 answer.extend(img_answer)
-            if len(answer) == 2: 
+            if len(answer) == 2:
                 rind = random.randint(0, 1)
                 answer = answer[rind]
-            else: # majority vote
+            else:  # majority vote
                 counter = Counter(answer)
 
                 # Find the item with the most counts
@@ -218,8 +208,37 @@ def func_vqa(sub_query, study_id):
 
             return answer
 
-    else: 
+    else:
         return ''
+
+
+def func_vqa(sub_query, study_id):
+    # Find image from folders
+    images = find_image_from_folder(study_id) # list
+
+    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
+
+
+    if (len(labels) <= 2):
+        prompt_template = sub_query + 'Answer: '
+        # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
+        # The model will assign the highest score to the combination that matches the image the best.
+        texts = [prompt_template + l for l in labels]
+        answers = get_answer(images, texts, labels)
+
+    else:
+        answers = []
+        for l in labels:
+            bool_labels = ['0', '1']
+            prompt_template = sub_query + f' Is there {l}? '
+            texts = [prompt_template + bl for bl in bool_labels]
+            answer = get_answer(images, texts, labels)
+            if(answer == 0):
+                answers.append(l)
+    answers = set(answers)
+    return answers
+
+
 
 
 def execute_query(database_path, query):

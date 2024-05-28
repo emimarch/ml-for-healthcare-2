@@ -99,7 +99,7 @@ def get_labels(question, similarity_model, tokenizer, prompt_file='VQA/prompts/t
     #prompt_vqa = prompt_vqa + disclaimer
     return admissible_output_values
 
-def get_answer(model, image, texts, labels):
+def call_vqa_model(model, image, texts, labels):
     with torch.no_grad():
         image_features, text_features, logit_scale = model(image, texts)
 
