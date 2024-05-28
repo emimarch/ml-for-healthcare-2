@@ -9,10 +9,25 @@ import numpy as np
 import json 
 import os
 import argparse
-from search_database import get_only_table_samples
+#from search_database import get_only_table_samples
 import re
 import pandas as pd
 import shutil
+
+
+
+
+# Returns IDs of table only samples
+def get_only_table_samples(val_dataset_path):
+    val_dataset = json.load(open(val_dataset_path))
+
+    only_table_val = []
+    for entry in val_dataset:
+        if("study" in entry["text"] or "studies" in entry["text"] or "x-ray" in entry["text"] or "radiograph" in entry["text"]):
+            pass
+        else:
+            only_table_val.append(entry['id'])
+    return only_table_val
 
 def parse_option():
     parser = argparse.ArgumentParser()
@@ -71,10 +86,16 @@ def copy_files(source_dir, target_dir, file_names, study_ids):
     
     # Copy files that match the pattern
     for i, file_name in enumerate(file_names):
+        target_path = '{}{}/'.format(target_dir, study_ids[i])
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+            #print(f"Created target directory: {target_dir}")
 
         source_path = os.path.join(source_dir, file_name + '.jpg') # collect image from images
-        target_path = os.path.join(target_dir, str(study_ids[i]) + '.jpg') # save image into vqa_images/set/ using the study_id
-        
+        target_path = os.path.join(target_path ,'{}.jpg'.format(file_name)) # save image into vqa_images/set/{study_id}/ using the study_id
+        #print(source_path)
+        #print(target_path)
+        #return
         # Copy the file
         try: 
             shutil.copy(source_path, target_path)
@@ -116,8 +137,9 @@ def main():
 
     # Select images from image folder and save them in a separate folder
 
-    copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
-
+    # copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
+    
+    copy_files('data/images/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
 
 
 
