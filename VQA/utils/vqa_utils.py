@@ -2,15 +2,17 @@ import json
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from transformers import BertTokenizer, BertModel
+
 import torch
 import sys
 
 
 """ For computing the cosine similarity between BERT embeddings"""
-def sentence_similarity(sentence1, sentence2, model, tokenizer):
+def sentence_similarity(sentence1, sentence2, model, tokenizer, device):
     tokens1 = tokenizer(sentence1, return_tensors='pt', padding=True, truncation=True)
     tokens2 = tokenizer(sentence2, return_tensors='pt', padding=True, truncation=True)
+    tokens1 = {key: value.to(device) for key, value in tokens1.items()}
+    tokens2 = {key: value.to(device) for key, value in tokens2.items()}
 
     # Obtain BERT embeddings for the tokenized sentences
     with torch.no_grad():
@@ -20,11 +22,11 @@ def sentence_similarity(sentence1, sentence2, model, tokenizer):
     # Extract the embeddings
     embeddings1 = outputs1.last_hidden_state.mean(dim=1)  # Mean pooling over tokens
     embeddings2 = outputs2.last_hidden_state.mean(dim=1)
-    similarity_score = cosine_similarity(embeddings1,embeddings2)
+    similarity_score = cosine_similarity(embeddings1.cpu(),embeddings2.cpu())
     return similarity_score
 
 """ Function for building a prompt starting from a question. It takes as value the templates as well as admissible values for the output and placeholders in the templates"""
-def get_labels(question, prompt_file='VQA/prompts/templates.json', class_values_file='VQA/prompts/class_values.json'):
+def get_labels(question, similarity_model, tokenizer, prompt_file='VQA/prompts/templates.json', class_values_file='VQA/prompts/class_values.json'):
     question_tmp = question
     question_tmp = question_tmp.replace("anatomical finding", "anatomicalfinding")
     question_tmp = question_tmp.replace("technical assessment", "technicalassessment")
@@ -64,14 +66,12 @@ def get_labels(question, prompt_file='VQA/prompts/templates.json', class_values_
 
     # Load pre-trained BERT model and tokenizer
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    model = BertModel.from_pretrained('bert-base-uncased')
-    model = model.to(device)
-    tokenizer = tokenizer.to(device)
+    similarity_model.to(device)
+    #tokenizer.to(device)
     # Define some keyword that should influence the cosine similarity and make the results more correct
     keywords_for_sim = ['abnormal','either','both','common','anatomical','which','list',"attribute","category","object","gender"]
     for key, value in prompt_values.items():
-        sim = sentence_similarity(template_from_q,value["template"], model, tokenizer)
+        sim = sentence_similarity(template_from_q,value["template"], similarity_model, tokenizer, device)
         """ 
             We decrease or increase the similarity according to the keywords. If the template build from the question and the template from the paper have some specific 
             keywords in common, add, otherwise decrease the similarity

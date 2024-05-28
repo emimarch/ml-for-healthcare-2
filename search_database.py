@@ -5,6 +5,7 @@ from VQA.utils.vqa_utils import get_labels, get_answer
 import torch
 from urllib.request import urlopen
 from PIL import Image
+from transformers import BertTokenizer, BertModel
 
 
 import argparse
@@ -20,6 +21,9 @@ from PIL import Image
 
 model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
 tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+
+bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+similarity_model = BertModel.from_pretrained('bert-base-uncased')
 
 def parse_option():
     parser = argparse.ArgumentParser()
@@ -124,11 +128,10 @@ def find_image_from_folder(study_id):
 
 
 def func_vqa(sub_query, study_id):
-
     # Find image from folders
     image = find_image_from_folder(study_id)
 
-    labels = get_labels(sub_query)
+    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
 
     prompt_template = sub_query + 'Answer: '
     # We treat the problem as a classification problem, where the prompt is given by the combination of quetion + label
@@ -137,7 +140,6 @@ def func_vqa(sub_query, study_id):
 
     context_length = 256
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    device = torch.device('cpu')
     model.to(device)
     model.eval()
 
@@ -145,6 +147,7 @@ def func_vqa(sub_query, study_id):
     texts = tokenizer(texts, context_length=context_length).to(device)
 
     answer = get_answer(model, image, texts, labels)
+    answer = int(answer) if answer in ["0", "1"] else answer
     return answer
 
 
