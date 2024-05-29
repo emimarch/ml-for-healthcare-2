@@ -31,7 +31,7 @@ def get_only_table_samples(val_dataset_path):
 
 def parse_option():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dset', type = str, default='valid')    
+    parser.add_argument('--dset', type = str, default='all')
     opt = parser.parse_args()
     return opt
 
@@ -104,7 +104,10 @@ def copy_files(source_dir, target_dir, file_names, study_ids):
             print(f'Not found {file_name}')
 
 
-def main(): 
+
+
+
+def main():
     opt = parse_option()
     dset = opt.dset
     set_path = 'data/{}_reformatted.json'.format(dset)
@@ -112,36 +115,35 @@ def main():
     vqa_queries_filepath = 'data/vqa/{}/'.format(dset)
 
     image_mapping = pd.read_csv('data/mimic_cxr_metadata.csv')
-    # Get vqa queries 
-    vqa_queries = return_fvqa_queries(set_path, query_path)
-    # Save vqa queries
-    os.makedirs(vqa_queries_filepath, exist_ok=True)
-    with open(os.path.join(vqa_queries_filepath, "vqa_queries.json"), "w") as f:
-        json.dump(vqa_queries, f)
-
-
-    # Given the vqa queries, find the study ids or patient ids from the CXR database so that you can collect the images
-
-    studies_ids, patient_ids = return_study_ids_or_patient_ids(vqa_queries)
-  
-
-    selected_images = image_mapping[(image_mapping['subject_id'].isin(patient_ids)) | (image_mapping['study_id'].isin(studies_ids))].dicom_id.values
-
-
-    # Select the study ids of the collected images
-
-    selected_images_sids = image_mapping[image_mapping['dicom_id'].isin(selected_images)].study_id.values
-
-    print(len(selected_images_sids))
-
-
-    # Select images from image folder and save them in a separate folder
 
     # copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
-    
-    copy_files('data/images/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
+    if(dset == 'all'):
+        selected_images = image_mapping['dicom_id'].values
+        selected_image_ids = image_mapping['study_id'].values
 
+        copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/', 'data/vqa/{}/images/'.format(dset), selected_images, selected_image_ids)
+    else:
+        # Get vqa queries
+        vqa_queries = return_fvqa_queries(set_path, query_path)
+        # Save vqa queries
+        os.makedirs(vqa_queries_filepath, exist_ok=True)
+        with open(os.path.join(vqa_queries_filepath, "vqa_queries.json"), "w") as f:
+            json.dump(vqa_queries, f)
 
+        # Given the vqa queries, find the study ids or patient ids from the CXR database so that you can collect the images
+
+        studies_ids, patient_ids = return_study_ids_or_patient_ids(vqa_queries)
+
+        selected_images = image_mapping[(image_mapping['subject_id'].isin(patient_ids)) | (
+            image_mapping['study_id'].isin(studies_ids))].dicom_id.values
+
+        # Select the study ids of the collected images
+
+        selected_images_sids = image_mapping[image_mapping['dicom_id'].isin(selected_images)].study_id.values
+
+        print(len(selected_images_sids))
+        copy_files('/run/media/filippo/Seagate Basic/resized_ratio_short_side_768/resized_ratio_short_side_768/',
+                   'data/vqa/{}/images/'.format(dset), selected_images, selected_images_sids)
 
 
 if __name__ == "__main__":

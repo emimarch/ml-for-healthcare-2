@@ -6,6 +6,7 @@ import torch
 from urllib.request import urlopen
 from PIL import Image
 from transformers import BertTokenizer, BertModel
+from tqdm import tqdm
 
 
 import argparse
@@ -22,20 +23,24 @@ from collections import Counter
 
 
 custom_home = '/c/Users/aemil/Downloads/ML_for_healthcare/huggingface'
-model, preprocess = create_model_from_pretrained('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
-tokenizer = get_tokenizer('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
+#model, preprocess = create_model_from_pretrained('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
+#tokenizer = get_tokenizer('C:/Users/aemil/Downloads/ML_for_healthcare/huggingface/models--microsoft--BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', cache_dir = custom_home)
+model, preprocess = create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
+tokenizer = get_tokenizer('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')
 
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 similarity_model = BertModel.from_pretrained('bert-base-uncased')
 
 def parse_option():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dset', type = str, default='valid')    
+    parser.add_argument('--dset', type = str, default='valid')
+    parser.add_argument('--imgset', type=str, default='all')
     opt = parser.parse_args()
 
     global DSET
-
+    global IMGSET
     DSET = opt.dset
+    IMGSET = opt.imgset
     return opt
 
 def post_process_answer(answer, round_digit=6, sorted_answer=False):
@@ -124,7 +129,7 @@ def get_only_table_samples(val_dataset_path):
     return only_table_val
 
 def find_image_from_folder(study_id):
-    directory_path = 'data/vqa_images/{}/{}/'.format(DSET, study_id)
+    directory_path = 'data/vqa/{}/images/{}/'.format(IMGSET, study_id)
     images = []
     # Iterate through all objects in the directory
     for item in os.listdir(directory_path):
@@ -144,6 +149,7 @@ def vqa(image, texts, labels):
 
     context_length = 256
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    #device = torch.device('cpu')
     model.to(device)
     model.eval()
 
@@ -151,8 +157,10 @@ def vqa(image, texts, labels):
     texts = tokenizer(texts, context_length=context_length).to(device)
 
     answer = call_vqa_model(model, image, texts, labels)
-    answer = int(answer) if answer in ["0", "1"] else answer
-
+    if(answer == "True"):
+        answer = 1
+    elif(answer == "False"):
+        answer = 0
     return answer
 
 
@@ -170,6 +178,7 @@ def find_template_option(labels):
 def get_answer(images,texts, labels):
     if len(images) == 1:
         answer = vqa(images[0], texts, labels)
+        return answer
     elif len(images) > 1:
         # Opzioni:
         # 1) Quali condizioni ci sono in questo studio => concatena output di ognuna =>  se label len(>= 2), and if two solo gender or solo view
@@ -196,7 +205,7 @@ def get_answer(images,texts, labels):
             answer = []
             for image in images:
                 img_answer = vqa(image, texts, labels)
-                answer.extend(img_answer)
+                answer.append(img_answer)
             if len(answer) == 2:
                 rind = random.randint(0, 1)
                 answer = answer[rind]
@@ -218,7 +227,7 @@ def func_vqa(sub_query, study_id):
     # Find image from folders
     images = find_image_from_folder(study_id) # list
 
-    labels = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
+    labels, admissible_answers = get_labels(sub_query, similarity_model=similarity_model, tokenizer=bert_tokenizer)
 
 
     if (len(labels) <= 2):
@@ -231,13 +240,28 @@ def func_vqa(sub_query, study_id):
     else:
         answers = []
         for l in labels:
-            bool_labels = ['0', '1']
-            prompt_template = sub_query + f' Is there {l}? '
+            bool_labels = ['False', 'True']
+            prompt_template = sub_query + f' Is there {l}? Answer: '
             texts = [prompt_template + bl for bl in bool_labels]
-            answer = get_answer(images, texts, labels)
-            if(answer == 0):
+            answer = get_answer(images, texts, bool_labels)
+            #print(" L ",l," Answer ", answer)
+            if(answer == 1):
                 answers.append(l)
-    answers = set(answers)
+        answers = list(set(answers))
+        #print(" ANSWERS MULTI ",answers)
+        #print(" ADMISSIBLE VALUES ", admissible_answers)
+        """ If the question is of the type: are there any x in y?
+        In this case, we check for the presence of every x value, put those that are present in the list and return true if the list is not empty """
+        if(admissible_answers == ["False","True"]):
+            if(len(answers) > 0):
+                answers = 1
+            else:
+                answers = 0
+        else:
+            #answers = ", ".join([a for a in answers])
+            answers = json.dumps(answers)
+
+    #print(" ANSWER ",answers)
     return answers
 
 
@@ -285,18 +309,17 @@ def main():
 
 
     submission = []
-    for observation_id, generated_sql in observation_sql_dict.items():
+    for observation_id, generated_sql in tqdm(observation_sql_dict.items()):
+        #if(observation_id == '42'):
         # Check if ID is in table only
         generated_sql = post_process_sql(generated_sql)
-        #if int(observation_id) in only_table_ids: 
-        print('Observation ID: {}'.format(observation_id))
-        try: 
+        #if int(observation_id) in only_table_ids:
+        #print('Observation ID: {}'.format(observation_id))
+
+        try:
             answer = post_process_answer(execute_query('data/database/mimic_iv_cxr/silver/mimic_iv_cxr.db', generated_sql))
-        except: 
+        except:
             answer = None
-        
-        #else: 
-            #answer = None
 
         submission.append({"id": observation_id, "answer": answer})
 
