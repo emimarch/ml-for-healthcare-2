@@ -299,7 +299,7 @@ def execute_query(database_path, query):
 
 
 
-
+""" main of the logic for generating queries """
 def main(): 
     opt = parse_option()
     dset = opt.dset
