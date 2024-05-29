@@ -1,0 +1,290 @@
+{
+"0":{
+  "template": "Are there any ${category} in the ${object}?",
+  "content_type": "presence",
+  "answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"1":{
+"template": "Is there ${attribute} in the ${object}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "binary"
+},
+"2":{
+"template": "Is the ${object} abnormal?",
+"content_type": "abnormality",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"3":{
+"template": "Are there any ${category_1} or ${category_2} in the ${object}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"4":{
+"template": "Are there both ${attribute_1} and ${attribute_2} in the ${object}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "binary"
+},
+"5":{
+"template": "Is there either ${attribute_1} or ${attribute_2} in the ${object}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "binary"
+},
+"6":{
+"template": "List all ${category} in the ${object}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"7":{
+"template": "List all abnormalities in the ${object}.",
+"content_type": "abnormality",
+"answer_value_type": "anatomicalfinding",
+  "label_type": "multi"
+},
+"8":{
+"template": "List all ${category_1} and ${category_2} in the ${object}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"9":{
+"template": "Which ${category} is related to the ${object}, ${attribute_1} or ${attribute_2}?",
+"content_type": "attribute",
+"answer_value_type": "attribute_from_q",
+  "label_type": "single"
+},
+"10":{
+"template": "Are there any abnormalities in either the ${object_1} or the ${object_2}?",
+"content_type": "abnormality",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"11":{
+"template": "Are there any abnormalities in both the ${object_1} and the ${object_2}?",
+"content_type": "abnormality",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"12":{
+"template": "List all ${category} in either the ${object_1} or the ${object_2}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"13":{
+"template": "List all common ${category} in both the ${object_1} and the ${object_2}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"14":{
+"template": "List all ${category} only in the ${object_1} but not in the ${object_2}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"15":{
+"template": "List all abnormalities in either the ${object_1} or the ${object_2}.",
+"content_type": "abnormality",
+"answer_value_type": "anatomicalfinding",
+  "label_type": "multi"
+},
+"16":{
+"template": "List all common abnormalities in both the ${object_1} and the ${object_2}.",
+"content_type": "abnormality",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"17":{
+"template": "List all abnormalities only in the ${object_1} but not in the ${object_2}.",
+"content_type": "abnormality",
+"answer_value_type": "anatomicalfinding",
+  "label_type": "multi"
+},
+"18":{
+"template": "Are there any ${category}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"19":{
+"template": "Are there any abnormalities?",
+"content_type": "abnormality",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"20":{
+"template": "Are there any ${category_1} or ${category_2}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"21":{
+"template": "Is there ${attribute}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"22":{
+"template": "Are there both ${attribute_1} and ${attribute_2}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"23":{
+"template": "Is there either ${attribute_1} or ${attribute_2}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"24":{
+"template": "List all ${category}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"25":{
+"template": "List all ${category_1} and ${category_2}.",
+"content_type": "attribute",
+"answer_value_type": "attribute",
+  "label_type": "multi"
+},
+"26":{
+"template": "List all abnormalities",
+"content_type": "abnormality",
+"answer_value_type": "anatomicalfinding",
+  "label_type": "multi"
+},
+"27":{
+"template": "Which ${category} is related, ${attribute_1} or ${attribute_2}?",
+"content_type": "attribute",
+"answer_value_type": "attribute_from_q",
+  "label_type": "single"
+},
+"28":{
+"template": "Are both the ${object_1} and the ${object_2} related to ${attribute}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"29":{
+"template": "Is either the ${object_1} or the ${object_2} related to ${attribute}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"30":{
+"template": "List all anatomical locations related to ${attribute}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"31":{
+"template": "Which anatomical location is related to ${attribute}, the ${object_1} or the ${object_2}?",
+"content_type": "anatomy",
+"answer_value_type": "object_from_q",
+  "label_type": "single"
+},
+"32":{
+"template": "Which anatomical location is abnormal, the ${object_1} or the ${object_2}?",
+"content_type": "abnormality",
+"answer_value_type": "object_from_q",
+  "label_type": "single"
+},
+"33":{
+"template": "List all anatomical locations related to either ${attribute_1} or ${attribute_2}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"34":{
+"template": "List all common anatomical locations related to both ${attribute_1} and ${attribute_2}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"35":{
+"template": "List all anatomical locations related to ${attribute_1} but not ${attribute_2}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"36":{
+"template": "Are there any ${category} related to the ${object_1} and the ${object_2}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"37":{
+"template": "Are there any ${category} related to the ${object_1} or the ${object_2}?",
+"content_type": "presence",
+"answer_value_type": "boolean",
+  "label_type": "multi"
+},
+"38":{
+"template": "List all anatomical locations related to any ${category}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"39":{
+"template": " List all anatomical locations related to any ${category_1} or ${category_2}.",
+"content_type": "anatomy",
+"answer_value_type": "object",
+  "label_type": "multi"
+},
+"40":{
+"template": "Is this an ${viewpos} view?",
+"content_type": "plane",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"41":{
+"template": "Which view is in this image, AP or PA?",
+"content_type": "plane",
+"answer_value_type": "view",
+  "label_type": "single"
+},
+"42":{
+"template": "What is the view of this image?",
+"content_type": "plane",
+"answer_value_type": "view",
+  "label_type": "single"
+},
+"43":{
+"template": "Is this patient ${gender}?",
+"content_type": "gender",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"44":{
+"template": "What is the gender of this patient, male or female?",
+"content_type": "gender",
+"answer_value_type": "gender",
+  "label_type": "single"
+},
+"45":{
+"template": "What is the gender of this patient?",
+"content_type": "gender",
+"answer_value_type": "gender",
+  "label_type": "single"
+},
+"46":{
+"template": "Is the width of the cardiac silhouette wider than 1/2 of the thorax width?",
+"content_type": "size",
+"answer_value_type": "boolean",
+  "label_type": "single"
+},
+"47":{
+"template": " Is the width of the upper mediastinum wider than 1/3 of the thorax width?",
+"content_type": "size",
+"answer_value_type": "boolean",
+  "label_type": "single"
+}
+}
