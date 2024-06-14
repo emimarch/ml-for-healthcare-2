@@ -1,4 +1,4 @@
-# TEXT-TO-SQL and VQA for electronic health records and x-ray scans
+# TEXT-TO-SQL and VQA for Electronic Health Records (EHR) and Chest X-Ray Scans
 
 ## SET-UP
 
