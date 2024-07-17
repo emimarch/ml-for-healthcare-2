@@ -1,5 +1,9 @@
 # TEXT-TO-SQL and VQA for Electronic Health Records (EHR) and Chest X-Ray Scans
 
+## Project description
+
+Project link: https://www.codabench.org/competitions/2902/?secret_key=eac86d58-aedb-4380-8c23-08f44d26b13d
+
 ## SET-UP
 
 1) Create and activate Python 3.8.5 environment
