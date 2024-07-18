@@ -4,7 +4,9 @@
 
 Project competition link: https://www.codabench.org/competitions/2902/?secret_key=eac86d58-aedb-4380-8c23-08f44d26b13d
 
-For this project, we decided to fine-tune a pre-trained codes-1b model on the MIMIC-IV dataset for EHR question answering (text-to-SQL). This fine-tuned model achieves very good performace for table questions, image questions, and table + image questions across all metrics. After creating the SQL queries, we query the database. If a question is an image or table + image question, we call BiomedCLIP-PubMedBERT to perform the VQA. 
+For this project, we decided to fine-tune a pre-trained codes-1b model on the MIMIC-IV dataset for EHR question answering (text-to-SQL). Despite the low model complexity, by fine-tuning the codes model we are able to achieve very good text-to-SQL performace for table questions, image questions, and table + image questions across all metrics. After creating the SQL queries, we query the database. If a question is an image or table + image question, we call BiomedCLIP-PubMedBERT to perform the VQA. 
+
+We run the training on a Tesla V100 16GB GPU. 
 
 ## SET-UP
 
